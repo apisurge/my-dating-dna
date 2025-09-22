@@ -38,10 +38,6 @@ import {
   People,
   AttachMoney,
   Schedule,
-  Visibility,
-  Dashboard,
-  Settings,
-  Assessment,
 } from "@mui/icons-material";
 import { toast } from "sonner";
 
@@ -129,7 +125,7 @@ export default function AffiliateDashboard() {
       return;
     }
     fetchAffiliateData();
-  }, [session, status]);
+  }, [session, status, router]);
 
   const fetchAffiliateData = async () => {
     try {
@@ -157,12 +153,26 @@ export default function AffiliateDashboard() {
     setRegistering(true);
 
     try {
+      // Validate that we have user email from session
+      if (!session?.user?.email) {
+        toast.error(
+          "User email not found. Please try logging out and logging back in."
+        );
+        return;
+      }
+
+      // Add email from session to the form data
+      const formData = {
+        ...registerForm,
+        email: session.user.email,
+      };
+
       const response = await fetch("/api/affiliate/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(registerForm),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -376,6 +386,42 @@ export default function AffiliateDashboard() {
                         color: "#6b7280",
                         "&.Mui-focused": {
                           color: "#1f2937",
+                        },
+                      },
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    value={session?.user?.email || ""}
+                    disabled
+                    helperText="This email from your account will be used for affiliate communications"
+                    sx={{
+                      mb: 3,
+                      "& .MuiOutlinedInput-root": {
+                        color: "#1f2937",
+                        "& fieldset": {
+                          borderColor: "#d1d5db",
+                          borderRadius: "14px",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#9ca3af",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#2c5530",
+                        },
+                        "&.Mui-disabled fieldset": {
+                          borderColor: "#e5e7eb",
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "#6b7280",
+                        "&.Mui-focused": {
+                          color: "#1f2937",
+                        },
+                        "&.Mui-disabled": {
+                          color: "#9ca3af",
                         },
                       },
                     }}

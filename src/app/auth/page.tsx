@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import {
   Button,
   TextField,
@@ -32,7 +32,7 @@ export default function AuthPage() {
   function onBlur() {
     setError(isValidEmail(email) ? null : "Please enter a valid email.");
   }
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -65,7 +65,7 @@ export default function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    console.log("isloding value", isLoading);
     try {
       if (isSignUp) {
         const response = await fetch("/api/auth/register", {
@@ -122,10 +122,7 @@ export default function AuthPage() {
       setIsLoading(false);
     }
   };
-
-  if (session) {
-    return router.push("/");
-  }
+  if (status === "authenticated") router.push("/");
 
   return (
     <div className="min-h-screen bg-gray-100">

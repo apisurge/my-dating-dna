@@ -1,28 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import Affiliate from "@/lib/models/Affiliate";
 import AffiliateClick from "@/lib/models/AffiliateClick";
 import Commission from "@/lib/models/Commission";
 import Order from "@/lib/models/Order";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectToDatabase();
-    
+
     // Get affiliate by email
-    const affiliate = await Affiliate.findOne({ 
-      email: session.user.email 
+    const affiliate = await Affiliate.findOne({
+      email: session.user.email,
     });
 
     if (!affiliate) {
@@ -58,7 +55,6 @@ export async function GET(request: NextRequest) {
     const recentCommissions = await Commission.find({
       affiliateCode: affiliate.code,
     })
-      .populate("orderId")
       .sort({ createdAt: -1 })
       .limit(10);
 
@@ -96,13 +92,16 @@ export async function GET(request: NextRequest) {
       stats: {
         clicks: clicksCount,
         conversions: conversionsCount,
-        conversionRate: clicksCount > 0 ? (conversionsCount / clicksCount * 100).toFixed(2) : 0,
+        conversionRate:
+          clicksCount > 0
+            ? ((conversionsCount / clicksCount) * 100).toFixed(2)
+            : 0,
         commissions: stats,
         nextPayoutDate: nextPayout?.lockAt || null,
       },
       recentCommissions: recentCommissions.map((commission) => ({
         id: commission._id,
-        orderId: commission.orderId,
+        orderId: commission.orderId.toString(),
         baseAmountCents: commission.baseAmountCents,
         commissionCents: commission.commissionCents,
         status: commission.status,

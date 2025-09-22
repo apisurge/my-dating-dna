@@ -115,12 +115,9 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Add indexes for better performance
-orderSchema.index({ stripePaymentIntent: 1 });
 orderSchema.index({ customerEmail: 1 });
 orderSchema.index({ affiliateCode: 1 });
 orderSchema.index({ paidAt: -1 });
-orderSchema.index({ refundedAt: 1 });
-orderSchema.index({ stripeRefundId: 1 });
 
 const Order = (mongoose.models.Order as mongoose.Model<IOrder>) || mongoose.model<IOrder>("Order", orderSchema);
 
