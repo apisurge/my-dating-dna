@@ -59,50 +59,46 @@ function AssessmentPageContent() {
     checkAccess();
   }, []);
 
+  const sendEmail = async () => {
+    const email = searchParams.get("email");
+    const name = searchParams.get("name");
+    const plan = searchParams.get("plan");
+
+    if (email && name && plan) {
+      try {
+        const response = await fetch("/api/send-success-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name, plan }),
+        });
+        const data = await response.json();
+        console.log('Email sent:', data);
+      } catch (error) {
+        console.error('Error sending email:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    sendEmail(); // Trigger email on page load after Stripe success
+  }, []);
+
   if (status === "unauthenticated") {
     return (
       <div className="min-h-screen bg-gray-100">
-        <Container
-          maxWidth="md"
-          className="flex items-center justify-center min-h-screen"
-        >
+        <Container maxWidth="md" className="flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="w-full text-center"
           >
-            <Card
-              elevation={0}
-              sx={{
-                background: "#ffffff1)",
-
-                border: "1px solid #ffffff2)",
-                borderRadius: 4,
-                p: 6,
-              }}
-            >
+            <Card elevation={0} sx={{ background: "#ffffff1)", border: "1px solid #ffffff2)", borderRadius: 4, p: 6 }}>
               <CardContent>
-                <Typography
-                  variant="h3"
-                  component="h1"
-                  gutterBottom
-                  sx={{
-                    fontWeight: 700,
-                    color: "white",
-                    mb: 4,
-                  }}
-                >
+                <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: "white", mb: 4 }}>
                   Access Required
                 </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#ffffff9)",
-                    mb: 6,
-                    lineHeight: 1.7,
-                  }}
-                >
+                <Typography variant="h6" sx={{ color: "#ffffff9)", mb: 6, lineHeight: 1.7 }}>
                   You need to sign in to access the Dating DNA assessment.
                 </Typography>
                 <Button
@@ -135,7 +131,6 @@ function AssessmentPageContent() {
   }
 
   if (status === "loading" || isChecking) {
-    console.log(status, isChecking);
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <Container maxWidth="sm" className="text-center">
@@ -144,36 +139,13 @@ function AssessmentPageContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <Card
-              elevation={0}
-              sx={{
-                background: "#ffffff1)",
-
-                border: "1px solid #ffffff2)",
-                borderRadius: 4,
-                p: 6,
-                textAlign: "center",
-              }}
-            >
+            <Card elevation={0} sx={{ background: "#ffffff1)", border: "1px solid #ffffff2)", borderRadius: 4, p: 6, textAlign: "center" }}>
               <CardContent>
                 <CircularProgress size={60} sx={{ color: "white", mb: 3 }} />
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: 600,
-                    color: "green",
-                    mb: 2,
-                  }}
-                >
+                <Typography variant="h4" component="h2" sx={{ fontWeight: 600, color: "green", mb: 2 }}>
                   Checking Access...
                 </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    color: "#ffffff8)",
-                  }}
-                >
+                <Typography variant="body1" sx={{ color: "#ffffff8)" }}>
                   Verifying your assessment access
                 </Typography>
               </CardContent>
@@ -187,47 +159,19 @@ function AssessmentPageContent() {
   if (accessStatus === "denied") {
     return (
       <div className="min-h-screen bg-gray-100">
-        <Container
-          maxWidth="md"
-          className="flex items-center justify-center min-h-screen"
-        >
+        <Container maxWidth="md" className="flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="w-full text-center"
           >
-            <Card
-              elevation={0}
-              sx={{
-                background: "#ffffff1)",
-
-                border: "1px solid #ffffff2)",
-                borderRadius: 4,
-                p: 6,
-              }}
-            >
+            <Card elevation={0} sx={{ background: "#ffffff1)", border: "1px solid #ffffff2)", borderRadius: 4, p: 6 }}>
               <CardContent>
-                <Typography
-                  variant="h3"
-                  component="h1"
-                  gutterBottom
-                  sx={{
-                    fontWeight: 700,
-                    color: "white",
-                    mb: 4,
-                  }}
-                >
+                <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: "white", mb: 4 }}>
                   Purchase Required
                 </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#ffffff9)",
-                    mb: 6,
-                    lineHeight: 1.7,
-                  }}
-                >
+                <Typography variant="h6" sx={{ color: "#ffffff9)", mb: 6, lineHeight: 1.7 }}>
                   You need to purchase access to the assessment plan
                 </Typography>
                 <Button
